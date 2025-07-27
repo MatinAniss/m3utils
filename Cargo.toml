@@ -1,0 +1,15 @@
+[package]
+name = "m3utils"
+version = "0.1.0"
+authors = ["Matin Aniss"]
+edition = "2024"
+description = "Utilities for handling `m3u` and `m3u8` playlists, with support for extensions in compliance with the RFC 8216 HTTP Live Streaming specification."
+readme = "README.md"
+homepage = "https://github.com/MatinAniss/m3utils"
+repository = "https://github.com/MatinAniss/m3utils"
+license = "MIT OR Apache-2.0"
+keywords = ["m3u", "m3u8", "hls"]
+categories = ["parser-implementations"]
+
+[dependencies]
+nom = "8.0.0"
