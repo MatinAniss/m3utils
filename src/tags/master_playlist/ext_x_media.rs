@@ -10,35 +10,27 @@ use nom::{
 
 use crate::{
     tags::{Tag, Tags, master_playlist::MasterPlaylistTags},
-    version::Version,
+    types::{MediaType, Version},
 };
 
 #[derive(Debug)]
-pub(crate) struct ExtXMedia {
-    pub(crate) media_type: ExtXMediaMediaType,
-    pub(crate) uri: Option<String>,
-    pub(crate) group_id: String,
-    pub(crate) language: Option<String>,
-    pub(crate) associated_language: Option<String>,
-    pub(crate) name: String,
-    pub(crate) default: bool,
-    pub(crate) autoselect: bool,
-    pub(crate) forced: bool,
-    pub(crate) instream_id: Option<String>,
-    pub(crate) characteristics: Option<String>,
-    pub(crate) channels: Option<String>,
-}
-
-#[derive(Debug)]
-pub(crate) enum ExtXMediaMediaType {
-    Audio,
-    Video,
-    Subtitles,
-    ClosedCaptions,
+pub struct ExtXMedia {
+    pub media_type: MediaType,
+    pub uri: Option<String>,
+    pub group_id: String,
+    pub language: Option<String>,
+    pub associated_language: Option<String>,
+    pub name: String,
+    pub default: bool,
+    pub autoselect: bool,
+    pub forced: bool,
+    pub instream_id: Option<String>,
+    pub characteristics: Option<String>,
+    pub channels: Option<String>,
 }
 
 enum ExtXMediaAttributes {
-    Type(ExtXMediaMediaType),
+    Type(MediaType),
     Uri(String),
     GroupId(String),
     Language(String),
@@ -73,12 +65,10 @@ impl Tag for ExtXMedia {
                                 tag("TYPE"),
                                 char('='),
                                 alt((
-                                    map(tag("AUDIO"), |_| ExtXMediaMediaType::Audio),
-                                    map(tag("VIDEO"), |_| ExtXMediaMediaType::Video),
-                                    map(tag("SUBTITLES"), |_| ExtXMediaMediaType::Subtitles),
-                                    map(tag("CLOSED-CAPTIONS"), |_| {
-                                        ExtXMediaMediaType::ClosedCaptions
-                                    }),
+                                    map(tag("AUDIO"), |_| MediaType::Audio),
+                                    map(tag("VIDEO"), |_| MediaType::Video),
+                                    map(tag("SUBTITLES"), |_| MediaType::Subtitles),
+                                    map(tag("CLOSED-CAPTIONS"), |_| MediaType::ClosedCaptions),
                                 )),
                             ),
                             |(_, media_type)| ExtXMediaAttributes::Type(media_type),

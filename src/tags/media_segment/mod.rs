@@ -7,4 +7,4 @@ mod ext_x_program_date_time;
 mod extinf;
 
 #[derive(Debug)]
-pub(crate) enum MediaSegmentTags {}
+pub enum MediaSegmentTags {}

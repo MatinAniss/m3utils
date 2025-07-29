@@ -5,19 +5,18 @@ use nom::{
     branch::alt,
     character::complete::{char, line_ending, not_line_ending},
     combinator::map,
-    error::Error,
+    error::Error as NomError,
     multi::separated_list0,
     sequence::preceded,
 };
+
+use crate::Error;
 
 #[derive(Debug)]
 pub struct Playlist {
     pub entries: Vec<String>,
     pub comments: Vec<String>,
 }
-
-#[derive(Debug)]
-pub enum PlaylistParseError {}
 
 enum Line {
     Comment(String),
@@ -26,11 +25,11 @@ enum Line {
 }
 
 impl FromStr for Playlist {
-    type Err = PlaylistParseError;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let lines = separated_list0(
-            line_ending::<_, Error<&str>>,
+            line_ending::<_, NomError<&str>>,
             alt((
                 preceded(
                     char('#'),

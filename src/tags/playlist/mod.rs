@@ -1,10 +1,13 @@
-use crate::tags::playlist::ext_x_start::ExtXStart;
+mod ext_x_independent_segments;
+mod ext_x_start;
 
-pub(crate) mod ext_x_independent_segments;
-pub(crate) mod ext_x_start;
+pub use ext_x_independent_segments::*;
+pub use ext_x_start::*;
+
+use crate::types::Start;
 
 #[derive(Debug)]
-pub(crate) enum PlaylistTags {
+pub enum PlaylistTags {
     ExtXIndependentSegments,
-    ExtXStart(ExtXStart),
+    ExtXStart(Start),
 }

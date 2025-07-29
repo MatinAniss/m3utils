@@ -2,11 +2,11 @@ use nom::{IResult, Parser, bytes::complete::tag, combinator::map};
 
 use crate::{
     tags::{Tag, Tags, playlist::PlaylistTags},
-    version::Version,
+    types::Version,
 };
 
 #[derive(Debug)]
-pub(crate) struct ExtXIndependentSegments;
+pub struct ExtXIndependentSegments;
 
 impl Tag for ExtXIndependentSegments {
     const TAG_PREFIX: &'static str = "EXT-X-INDEPENDENT-SEGMENTS";

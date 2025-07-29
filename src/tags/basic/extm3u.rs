@@ -2,11 +2,11 @@ use nom::{IResult, Parser, bytes::complete::tag, combinator::map};
 
 use crate::{
     tags::{Tag, Tags, basic::BasicTags},
-    version::Version,
+    types::Version,
 };
 
 #[derive(Debug)]
-pub(crate) struct Extm3u;
+pub struct Extm3u;
 
 impl Tag for Extm3u {
     const TAG_PREFIX: &'static str = "EXTM3U";

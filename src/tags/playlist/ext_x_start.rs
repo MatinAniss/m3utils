@@ -11,14 +11,11 @@ use nom::{
 
 use crate::{
     tags::{Tag, Tags, playlist::PlaylistTags},
-    version::Version,
+    types::{Start, Version},
 };
 
 #[derive(Debug)]
-pub(crate) struct ExtXStart {
-    pub(crate) time_offset: f64,
-    pub(crate) precise: bool,
-}
+pub struct ExtXStart;
 
 enum ExtXStartAttributes {
     TimeOffset(f64),
@@ -79,7 +76,7 @@ impl Tag for ExtXStart {
                     }
                 }
 
-                Ok(Tags::Playlist(PlaylistTags::ExtXStart(Self {
+                Ok(Tags::Playlist(PlaylistTags::ExtXStart(Start {
                     time_offset: time_offset.ok_or("")?,
                     precise: precise.unwrap_or(false),
                 })))

@@ -10,37 +10,26 @@ use nom::{
 
 use crate::{
     tags::{Tag, Tags, master_playlist::MasterPlaylistTags},
-    version::Version,
+    types::{HDCPLevel, Resolution, Version},
 };
 
 #[derive(Debug)]
-pub(crate) struct ExtXIFrameStreamInf {
-    pub(crate) bandwidth: u64,
-    pub(crate) average_bandwidth: Option<u64>,
-    pub(crate) codecs: Option<String>,
-    pub(crate) resolution: Option<ExtXIFrameStreamInfResolution>,
-    pub(crate) hdcp_level: Option<ExtXIFrameStreamInfHDCPLevel>,
-    pub(crate) video: Option<String>,
-    pub(crate) uri: String,
-}
-
-#[derive(Debug)]
-pub(crate) struct ExtXIFrameStreamInfResolution {
-    pub(crate) width: u64,
-    pub(crate) height: u64,
-}
-
-#[derive(Debug)]
-pub(crate) enum ExtXIFrameStreamInfHDCPLevel {
-    Type0,
+pub struct ExtXIFrameStreamInf {
+    pub bandwidth: u64,
+    pub average_bandwidth: Option<u64>,
+    pub codecs: Option<String>,
+    pub resolution: Option<Resolution>,
+    pub hdcp_level: Option<HDCPLevel>,
+    pub video: Option<String>,
+    pub uri: String,
 }
 
 enum ExtXIFrameStreamInfAttributes {
     Bandwidth(u64),
     AverageBandwidth(u64),
     Codecs(String),
-    Resolution(ExtXIFrameStreamInfResolution),
-    HDCPLevel(ExtXIFrameStreamInfHDCPLevel),
+    Resolution(Resolution),
+    HDCPLevel(HDCPLevel),
     Video(String),
     Uri(String),
     Unknown,
@@ -86,16 +75,17 @@ impl Tag for ExtXIFrameStreamInf {
                                 separated_pair(u64, char('x'), u64),
                             ),
                             |(_, (width, height))| {
-                                ExtXIFrameStreamInfAttributes::Resolution(
-                                    ExtXIFrameStreamInfResolution { width, height },
-                                )
+                                ExtXIFrameStreamInfAttributes::Resolution(Resolution {
+                                    width,
+                                    height,
+                                })
                             },
                         ),
                         map(
                             separated_pair(
                                 tag("HDCP-LEVEL"),
                                 char('='),
-                                map(tag("TYPE-0"), |_| ExtXIFrameStreamInfHDCPLevel::Type0),
+                                map(tag("TYPE-0"), |_| HDCPLevel::Type0),
                             ),
                             |(_, hdcp_level)| ExtXIFrameStreamInfAttributes::HDCPLevel(hdcp_level),
                         ),

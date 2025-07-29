@@ -6,4 +6,4 @@ mod ext_x_playlist_type;
 mod ext_x_targetduration;
 
 #[derive(Debug)]
-pub(crate) enum MediaPlaylistTags {}
+pub enum MediaPlaylistTags {}

@@ -11,41 +11,30 @@ use nom::{
 
 use crate::{
     tags::{Tag, Tags, master_playlist::MasterPlaylistTags},
-    version::Version,
+    types::{HDCPLevel, Resolution, Version},
 };
 
 #[derive(Debug)]
-pub(crate) struct ExtXStreamInf {
-    pub(crate) bandwidth: u64,
-    pub(crate) average_bandwidth: Option<u64>,
-    pub(crate) codecs: String,
-    pub(crate) resolution: Option<ExtXStreamInfResolution>,
-    pub(crate) frame_rate: Option<f64>,
-    pub(crate) hdcp_level: Option<ExtXStreamInfHDCPLevel>,
-    pub(crate) audio: Option<String>,
-    pub(crate) video: Option<String>,
-    pub(crate) subtitles: Option<String>,
-    pub(crate) closed_captions: Option<String>,
-}
-
-#[derive(Debug)]
-pub(crate) struct ExtXStreamInfResolution {
-    pub(crate) width: u64,
-    pub(crate) height: u64,
-}
-
-#[derive(Debug)]
-pub(crate) enum ExtXStreamInfHDCPLevel {
-    Type0,
+pub struct ExtXStreamInf {
+    pub bandwidth: u64,
+    pub average_bandwidth: Option<u64>,
+    pub codecs: String,
+    pub resolution: Option<Resolution>,
+    pub frame_rate: Option<f64>,
+    pub hdcp_level: Option<HDCPLevel>,
+    pub audio: Option<String>,
+    pub video: Option<String>,
+    pub subtitles: Option<String>,
+    pub closed_captions: Option<String>,
 }
 
 enum ExtXStreamInfAttributes {
     Bandwidth(u64),
     AverageBandwidth(u64),
     Codecs(String),
-    Resolution(ExtXStreamInfResolution),
+    Resolution(Resolution),
     FrameRate(f64),
-    HDCPLevel(ExtXStreamInfHDCPLevel),
+    HDCPLevel(HDCPLevel),
     Audio(String),
     Video(String),
     Subtitles(String),
@@ -93,10 +82,7 @@ impl Tag for ExtXStreamInf {
                                 separated_pair(u64, char('x'), u64),
                             ),
                             |(_, (width, height))| {
-                                ExtXStreamInfAttributes::Resolution(ExtXStreamInfResolution {
-                                    width,
-                                    height,
-                                })
+                                ExtXStreamInfAttributes::Resolution(Resolution { width, height })
                             },
                         ),
                         map(
@@ -107,7 +93,7 @@ impl Tag for ExtXStreamInf {
                             separated_pair(
                                 tag("HDCP-LEVEL"),
                                 char('='),
-                                map(tag("TYPE-0"), |_| ExtXStreamInfHDCPLevel::Type0),
+                                map(tag("TYPE-0"), |_| HDCPLevel::Type0),
                             ),
                             |(_, hdcp_level)| ExtXStreamInfAttributes::HDCPLevel(hdcp_level),
                         ),

@@ -10,20 +10,15 @@ use nom::{
 
 use crate::{
     tags::{Tag, Tags, master_playlist::MasterPlaylistTags},
-    version::Version,
+    types::Version,
 };
 
 #[derive(Debug)]
-pub(crate) struct ExtXSessionData {
-    pub(crate) data_id: String,
-    pub(crate) entry: ExtXSessionDataEntry,
-    pub(crate) language: Option<String>,
-}
-
-#[derive(Debug)]
-pub(crate) enum ExtXSessionDataEntry {
-    Value(String),
-    Uri(String),
+pub struct ExtXSessionData {
+    pub data_id: String,
+    pub value: Option<String>,
+    pub uri: Option<String>,
+    pub language: Option<String>,
 }
 
 enum ExtXSessionDataAttributes {
@@ -126,21 +121,11 @@ impl Tag for ExtXSessionData {
                     }
                 }
 
-                let entry = match (value, uri) {
-                    (Some(_), Some(_)) => {
-                        return Err("");
-                    }
-                    (Some(value), None) => ExtXSessionDataEntry::Value(value),
-                    (None, Some(uri)) => ExtXSessionDataEntry::Uri(uri),
-                    (None, None) => {
-                        return Err("");
-                    }
-                };
-
                 Ok(Tags::MasterPlaylist(MasterPlaylistTags::ExtXSessionData(
                     Self {
                         data_id: data_id.ok_or("")?,
-                        entry,
+                        value,
+                        uri,
                         language,
                     },
                 )))

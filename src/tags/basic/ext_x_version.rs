@@ -8,11 +8,11 @@ use nom::{
 
 use crate::{
     tags::{Tag, Tags, basic::BasicTags},
-    version::Version,
+    types::Version,
 };
 
 #[derive(Debug)]
-pub(crate) struct ExtXVersion;
+pub struct ExtXVersion;
 
 impl Tag for ExtXVersion {
     const TAG_PREFIX: &'static str = "EXT-X-VERSION";

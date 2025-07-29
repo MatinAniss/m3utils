@@ -1,10 +1,13 @@
-use crate::version::Version;
+use crate::types::Version;
 
-pub(crate) mod ext_x_version;
-pub(crate) mod extm3u;
+mod ext_x_version;
+mod extm3u;
+
+pub use ext_x_version::*;
+pub use extm3u::*;
 
 #[derive(Debug)]
-pub(crate) enum BasicTags {
+pub enum BasicTags {
     Extm3u,
     ExtXVersion(Version),
 }

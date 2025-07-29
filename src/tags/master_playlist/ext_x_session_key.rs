@@ -10,26 +10,20 @@ use nom::{
 
 use crate::{
     tags::{Tag, Tags, master_playlist::MasterPlaylistTags},
-    version::Version,
+    types::{EncryptionMethod, Version},
 };
 
 #[derive(Debug)]
-pub(crate) struct ExtXSessionKey {
-    pub(crate) method: ExtXSessionKeyMethod,
-    pub(crate) uri: String,
-    pub(crate) iv: Option<u128>,
-    pub(crate) key_format: Option<String>,
-    pub(crate) key_format_versions: Option<String>,
-}
-
-#[derive(Debug)]
-pub(crate) enum ExtXSessionKeyMethod {
-    AES128,
-    SampleAES,
+pub struct ExtXSessionKey {
+    pub method: EncryptionMethod,
+    pub uri: String,
+    pub iv: Option<u128>,
+    pub key_format: Option<String>,
+    pub key_format_versions: Option<String>,
 }
 
 enum ExtXSessionKeyAttributes {
-    Method(ExtXSessionKeyMethod),
+    Method(EncryptionMethod),
     Uri(String),
     Iv(u128),
     KeyFormat(String),
@@ -57,8 +51,8 @@ impl Tag for ExtXSessionKey {
                                 tag("METHOD"),
                                 char('='),
                                 alt((
-                                    map(tag("AES-128"), |_| ExtXSessionKeyMethod::AES128),
-                                    map(tag("SAMPLE-AES"), |_| ExtXSessionKeyMethod::SampleAES),
+                                    map(tag("AES-128"), |_| EncryptionMethod::AES128),
+                                    map(tag("SAMPLE-AES"), |_| EncryptionMethod::SampleAES),
                                 )),
                             ),
                             |(_, method)| ExtXSessionKeyAttributes::Method(method),
