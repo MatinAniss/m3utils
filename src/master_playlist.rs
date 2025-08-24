@@ -12,20 +12,17 @@ use nom::{
 use crate::{
     Error,
     tags::{BasicTags, MasterPlaylistTags, PlaylistTags, TAG_PARSERS, Tags},
-    types::{
-        IFrameVariant, Rendition, SessionData, SessionDataEntry, SessionKey, Start, Variant,
-        Version,
-    },
+    types::{Data, DataEntry, IFrameVariant, Key, Rendition, Start, Variant, Version},
 };
 
 #[derive(Debug)]
 pub struct MasterPlaylist {
     pub version: Version,
+    pub renditions: Vec<Rendition>,
     pub variants: Vec<Variant>,
     pub i_frame_variants: Vec<IFrameVariant>,
-    pub renditions: Vec<Rendition>,
-    pub session_data: Vec<SessionData>,
-    pub session_keys: Vec<SessionKey>,
+    pub session_data: Vec<Data>,
+    pub session_keys: Vec<Key>,
     pub independent_segments: bool,
     pub start: Option<Start>,
     pub comments: Vec<String>,
@@ -69,9 +66,9 @@ impl FromStr for MasterPlaylist {
         .into_iter();
 
         let mut version = None;
+        let mut renditions = Vec::new();
         let mut variants = Vec::new();
         let mut i_frame_variants = Vec::new();
-        let mut renditions = Vec::new();
         let mut session_data = Vec::new();
         let mut session_keys = Vec::new();
         let mut independent_segments = None;
@@ -97,9 +94,6 @@ impl FromStr for MasterPlaylist {
                             return Err(Error::DuplicateTag);
                         }
                         version = Some(v);
-                    }
-                    Tags::MediaSegment(_) | Tags::MediaPlaylist(_) => {
-                        return Err(Error::IncompatibleTag);
                     }
                     Tags::MasterPlaylist(MasterPlaylistTags::ExtXMedia(v)) => {
                         renditions.push(Rendition {
@@ -152,21 +146,21 @@ impl FromStr for MasterPlaylist {
                             (Some(_), Some(_)) => {
                                 return Err(Error::InvalidTag);
                             }
-                            (Some(value), None) => SessionDataEntry::Value(value),
-                            (None, Some(uri)) => SessionDataEntry::Uri(uri),
+                            (Some(value), None) => DataEntry::Value(value),
+                            (None, Some(uri)) => DataEntry::Uri(uri),
                             (None, None) => {
                                 return Err(Error::IncompleteTag);
                             }
                         };
 
-                        session_data.push(SessionData {
+                        session_data.push(Data {
                             data_id: v.data_id,
                             entry,
                             language: v.language,
                         });
                     }
                     Tags::MasterPlaylist(MasterPlaylistTags::ExtXSessionKey(v)) => {
-                        session_keys.push(SessionKey {
+                        session_keys.push(Key {
                             method: v.method,
                             uri: v.uri,
                             iv: v.iv,
@@ -189,6 +183,9 @@ impl FromStr for MasterPlaylist {
                             precise: v.precise,
                         });
                     }
+                    Tags::MediaSegment(_) | Tags::MediaPlaylist(_) => {
+                        return Err(Error::IncompatibleTag);
+                    }
                 },
                 Line::Comment(comment) => {
                     comments.push(comment);
@@ -199,9 +196,9 @@ impl FromStr for MasterPlaylist {
 
         Ok(Self {
             version: version.unwrap_or(Version::V1),
+            renditions,
             variants,
             i_frame_variants,
-            renditions,
             session_data,
             session_keys,
             independent_segments: independent_segments.unwrap_or(false),

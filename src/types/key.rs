@@ -1,7 +1,7 @@
 use crate::types::EncryptionMethod;
 
 #[derive(Debug)]
-pub struct SessionKey {
+pub struct Key {
     pub method: EncryptionMethod,
     pub uri: String,
     pub iv: Option<u128>,

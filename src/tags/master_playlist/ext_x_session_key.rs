@@ -1,15 +1,19 @@
 use nom::{
     IResult, Parser,
     branch::alt,
-    bytes::complete::{tag, take_till},
-    character::complete::{char, hex_digit1},
+    bytes::complete::tag,
+    character::complete::char,
     combinator::{map, map_res},
     multi::separated_list0,
-    sequence::{delimited, preceded, separated_pair},
+    sequence::{delimited, separated_pair},
 };
 
 use crate::{
-    tags::{Tag, Tags, master_playlist::MasterPlaylistTags},
+    tags::{
+        Tag, Tags,
+        master_playlist::MasterPlaylistTags,
+        utils::{hexadecimal, not_line_ending_or_comma, not_quote},
+    },
     types::{EncryptionMethod, Version},
 };
 
@@ -66,11 +70,7 @@ impl Tag for ExtXSessionKey {
                             |(_, uri)| ExtXSessionKeyAttributes::Uri(uri.to_string()),
                         ),
                         map_res(
-                            separated_pair(
-                                tag("IV"),
-                                char('='),
-                                preceded(alt((tag("0x"), tag("0X"))), hex_digit1),
-                            ),
+                            separated_pair(tag("IV"), char('='), hexadecimal),
                             |(_, iv)| {
                                 u128::from_str_radix(iv, 16)
                                     .map(|iv| ExtXSessionKeyAttributes::Iv(iv))
@@ -160,12 +160,4 @@ impl Tag for ExtXSessionKey {
         )
         .parse(s)
     }
-}
-
-fn not_line_ending_or_comma(s: &str) -> IResult<&str, &str> {
-    take_till(|c| c == '\n' || c == '\r' || c == ',').parse(s)
-}
-
-fn not_quote(s: &str) -> IResult<&str, &str> {
-    take_till(|c| c == '"').parse(s)
 }

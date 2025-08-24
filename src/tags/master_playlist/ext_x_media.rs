@@ -1,7 +1,7 @@
 use nom::{
     IResult, Parser,
     branch::alt,
-    bytes::complete::{tag, take_till},
+    bytes::complete::tag,
     character::complete::char,
     combinator::{map, map_res},
     multi::separated_list0,
@@ -9,7 +9,11 @@ use nom::{
 };
 
 use crate::{
-    tags::{Tag, Tags, master_playlist::MasterPlaylistTags},
+    tags::{
+        Tag, Tags,
+        master_playlist::MasterPlaylistTags,
+        utils::{not_line_ending_or_comma, not_quote},
+    },
     types::{MediaType, Version},
 };
 
@@ -283,12 +287,4 @@ impl Tag for ExtXMedia {
         )
         .parse(s)
     }
-}
-
-fn not_line_ending_or_comma(s: &str) -> IResult<&str, &str> {
-    take_till(|c| c == '\n' || c == '\r' || c == ',').parse(s)
-}
-
-fn not_quote(s: &str) -> IResult<&str, &str> {
-    take_till(|c| c == '"').parse(s)
 }

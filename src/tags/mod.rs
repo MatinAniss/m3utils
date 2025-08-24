@@ -3,6 +3,7 @@ mod master_playlist;
 mod media_playlist;
 mod media_segment;
 mod playlist;
+mod utils;
 
 use nom::IResult;
 
@@ -14,7 +15,6 @@ pub use playlist::*;
 
 use crate::types::Version;
 
-#[allow(dead_code)]
 #[derive(Debug)]
 pub enum Tags {
     Basic(BasicTags),
@@ -24,23 +24,34 @@ pub enum Tags {
     Playlist(PlaylistTags),
 }
 
-#[allow(dead_code)]
 pub(crate) trait Tag {
     const TAG_PREFIX: &'static str;
 
+    #[allow(dead_code)]
     fn min_version() -> Version;
 
     fn parse(s: &str) -> IResult<&str, Tags>;
 }
 
-pub(crate) const TAG_PARSERS: [fn(&str) -> IResult<&str, Tags>; 9] = [
+pub(crate) const TAG_PARSERS: [fn(&str) -> IResult<&str, Tags>; 22] = [
     // Basic Tags
     Extm3u::parse,
     ExtXVersion::parse,
     // Media Segment Tags
-    // todo
+    Extinf::parse,
+    ExtXByterange::parse,
+    ExtXDiscontinuity::parse,
+    ExtXKey::parse,
+    ExtXMap::parse,
+    ExtXProgramDateTime::parse,
+    ExtXDaterange::parse,
     // Media Playlist Tags
-    // todo
+    ExtXTargetduration::parse,
+    ExtXMediaSequence::parse,
+    ExtXDiscontinuitySequence::parse,
+    ExtXEndlist::parse,
+    ExtXPlaylistType::parse,
+    ExtXIFramesOnly::parse,
     // Master Playlist Tags
     ExtXMedia::parse,
     ExtXStreamInf::parse,

@@ -3,6 +3,9 @@ pub enum Error {
     /// This error denotes that the EXTM3U tag is missing from the begining of the playlist.
     MissingExtm3u,
 
+    /// This error denotes that a tag that is required for the playlist type is missing.
+    MissingTag,
+
     /// This error denotes that there is a duplicate tag that is not allowed.
     DuplicateTag,
 

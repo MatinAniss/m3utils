@@ -1,7 +1,7 @@
 use nom::{
     IResult, Parser,
     branch::alt,
-    bytes::complete::{tag, take_till},
+    bytes::complete::tag,
     character::complete::char,
     combinator::{map, map_res},
     multi::separated_list0,
@@ -10,7 +10,7 @@ use nom::{
 };
 
 use crate::{
-    tags::{Tag, Tags, playlist::PlaylistTags},
+    tags::{Tag, Tags, playlist::PlaylistTags, utils::not_line_ending_or_comma},
     types::{Start, Version},
 };
 
@@ -84,8 +84,4 @@ impl Tag for ExtXStart {
         )
         .parse(s)
     }
-}
-
-fn not_line_ending_or_comma(s: &str) -> IResult<&str, &str> {
-    take_till(|c| c == '\n' || c == '\r' || c == ',').parse(s)
 }
