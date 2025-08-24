@@ -1,5 +1,5 @@
 #[derive(Debug)]
-pub enum SessionDataEntry {
+pub enum DataEntry {
     Value(String),
     Uri(String),
 }
