@@ -1,7 +1,7 @@
 use nom::{IResult, Parser, bytes::complete::tag, combinator::map};
 
 use crate::{
-    tags::{MediaSegmentTags, Tag, Tags},
+    tags::{MediaSegmentTag, ExtTag, Tag},
     types::Version,
 };
 
@@ -11,16 +11,16 @@ pub struct ExtXDiscontinuity {
     pub offset: Option<u64>,
 }
 
-impl Tag for ExtXDiscontinuity {
+impl ExtTag for ExtXDiscontinuity {
     const TAG_PREFIX: &'static str = "EXT-X-DISCONTINUITY";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map(tag(Self::TAG_PREFIX), |_| {
-            Tags::MediaSegment(MediaSegmentTags::ExtXDiscontinuity)
+            Tag::MediaSegment(MediaSegmentTag::ExtXDiscontinuity)
         })
         .parse(s)
     }

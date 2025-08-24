@@ -7,25 +7,25 @@ use nom::{
 };
 
 use crate::{
-    tags::{MediaPlaylistTags, Tag, Tags},
+    tags::{ExtTag, MediaPlaylistTag, Tag},
     types::Version,
 };
 
 #[derive(Debug)]
 pub struct ExtXDiscontinuitySequence;
 
-impl Tag for ExtXDiscontinuitySequence {
+impl ExtTag for ExtXDiscontinuitySequence {
     const TAG_PREFIX: &'static str = "EXT-X-DISCONTINUITY-SEQUENCE";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map(
             separated_pair(tag(Self::TAG_PREFIX), char(':'), u64),
             |(_, discontinuity_sequence)| {
-                Tags::MediaPlaylist(MediaPlaylistTags::ExtXDiscontinuitySequence(
+                Tag::MediaPlaylist(MediaPlaylistTag::ExtXDiscontinuitySequence(
                     discontinuity_sequence,
                 ))
             },

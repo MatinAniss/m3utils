@@ -4,24 +4,24 @@ use nom::{
 };
 
 use crate::{
-    tags::{MediaSegmentTags, Tag, Tags, utils::date_time},
+    tags::{MediaSegmentTag, ExtTag, Tag, utils::date_time},
     types::Version,
 };
 
 #[derive(Debug)]
 pub struct ExtXProgramDateTime;
 
-impl Tag for ExtXProgramDateTime {
+impl ExtTag for ExtXProgramDateTime {
     const TAG_PREFIX: &'static str = "EXT-X-PROGRAM-DATE-TIME";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map(
             separated_pair(tag(Self::TAG_PREFIX), char(':'), date_time),
-            |(_, date_time)| Tags::MediaSegment(MediaSegmentTags::ExtXProgramDateTime(date_time)),
+            |(_, date_time)| Tag::MediaSegment(MediaSegmentTag::ExtXProgramDateTime(date_time)),
         )
         .parse(s)
     }

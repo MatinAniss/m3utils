@@ -8,7 +8,7 @@ use nom::{
 };
 
 use crate::{
-    tags::{MediaSegmentTags, Tag, Tags},
+    tags::{MediaSegmentTag, ExtTag, Tag},
     types::Version,
 };
 
@@ -18,14 +18,14 @@ pub struct Extinf {
     pub title: Option<String>,
 }
 
-impl Tag for Extinf {
+impl ExtTag for Extinf {
     const TAG_PREFIX: &'static str = "EXTINF";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -43,7 +43,7 @@ impl Tag for Extinf {
                 ),
             ),
             |(_, (duration, title))| {
-                Tags::MediaSegment(MediaSegmentTags::Extinf(Self { duration, title }))
+                Tag::MediaSegment(MediaSegmentTag::Extinf(Self { duration, title }))
             },
         )
         .parse(s)

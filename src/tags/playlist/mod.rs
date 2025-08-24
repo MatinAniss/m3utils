@@ -7,7 +7,7 @@ pub use ext_x_start::*;
 use crate::types::Start;
 
 #[derive(Debug)]
-pub enum PlaylistTags {
+pub enum PlaylistTag {
     ExtXIndependentSegments,
     ExtXStart(Start),
 }

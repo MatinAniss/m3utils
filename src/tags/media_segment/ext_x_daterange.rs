@@ -11,7 +11,7 @@ use nom::{
 
 use crate::{
     tags::{
-        MediaSegmentTags, Tag, Tags,
+        ExtTag, MediaSegmentTag, Tag,
         utils::{date_time, hexadecimal, not_equal, not_line_ending_or_comma, not_quote},
     },
     types::{ClientAttributeValue, DateRange, DateTime, Version},
@@ -41,14 +41,14 @@ enum ExtXDaterangeAttributes {
     Unknown,
 }
 
-impl Tag for ExtXDaterange {
+impl ExtTag for ExtXDaterange {
     const TAG_PREFIX: &'static str = "EXT-X-DATERANGE";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map_res(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -179,7 +179,7 @@ impl Tag for ExtXDaterange {
                     }
                 }
 
-                Ok(Tags::MediaSegment(MediaSegmentTags::ExtXDaterange(
+                Ok(Tag::MediaSegment(MediaSegmentTag::ExtXDaterange(
                     DateRange {
                         id: id.ok_or("")?,
                         class,

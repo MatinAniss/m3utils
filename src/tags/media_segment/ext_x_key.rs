@@ -10,7 +10,7 @@ use nom::{
 
 use crate::{
     tags::{
-        MediaSegmentTags, Tag, Tags,
+        MediaSegmentTag, ExtTag, Tag,
         utils::{hexadecimal, not_line_ending_or_comma, not_quote},
     },
     types::{EncryptionMethod, Key, Version},
@@ -34,14 +34,14 @@ enum ExtXKeyAttributes {
     Unknown,
 }
 
-impl Tag for ExtXKey {
+impl ExtTag for ExtXKey {
     const TAG_PREFIX: &'static str = "EXT-X-KEY";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map_res(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -142,7 +142,7 @@ impl Tag for ExtXKey {
                     }
                 }
 
-                Ok(Tags::MediaSegment(MediaSegmentTags::ExtXKey(Key {
+                Ok(Tag::MediaSegment(MediaSegmentTag::ExtXKey(Key {
                     method: method.ok_or("")?,
                     uri: uri.ok_or("")?,
                     iv,

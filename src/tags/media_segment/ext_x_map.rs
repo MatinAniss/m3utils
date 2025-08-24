@@ -10,7 +10,7 @@ use nom::{
 
 use crate::{
     tags::{
-        MediaSegmentTags, Tag, Tags,
+        MediaSegmentTag, ExtTag, Tag,
         utils::{not_line_ending_or_comma, not_quote},
     },
     types::{ByteRange, Map, Version},
@@ -28,14 +28,14 @@ enum ExtXMapAttributes {
     Unknown,
 }
 
-impl Tag for ExtXMap {
+impl ExtTag for ExtXMap {
     const TAG_PREFIX: &'static str = "EXT-X-MAP";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map_res(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -87,7 +87,7 @@ impl Tag for ExtXMap {
                     }
                 }
 
-                Ok(Tags::MediaSegment(MediaSegmentTags::ExtXMap(Map {
+                Ok(Tag::MediaSegment(MediaSegmentTag::ExtXMap(Map {
                     uri: uri.ok_or("")?,
                     byterange,
                 })))

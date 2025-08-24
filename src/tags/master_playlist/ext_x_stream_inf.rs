@@ -11,8 +11,8 @@ use nom::{
 
 use crate::{
     tags::{
-        Tag, Tags,
-        master_playlist::MasterPlaylistTags,
+        ExtTag, Tag,
+        master_playlist::MasterPlaylistTag,
         utils::{not_line_ending_or_comma, not_quote},
     },
     types::{HDCPLevel, Resolution, Version},
@@ -46,14 +46,14 @@ enum ExtXStreamInfAttributes {
     Unknown,
 }
 
-impl Tag for ExtXStreamInf {
+impl ExtTag for ExtXStreamInf {
     const TAG_PREFIX: &'static str = "EXT-X-STREAM-INF";
 
     fn min_version() -> Version {
         Version::V1
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map_res(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -221,7 +221,7 @@ impl Tag for ExtXStreamInf {
                     }
                 }
 
-                Ok(Tags::MasterPlaylist(MasterPlaylistTags::ExtXStreamInf(
+                Ok(Tag::MasterPlaylist(MasterPlaylistTag::ExtXStreamInf(
                     Self {
                         bandwidth: bandwidth.ok_or("")?,
                         average_bandwidth,
