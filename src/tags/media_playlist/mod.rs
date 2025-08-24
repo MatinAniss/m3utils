@@ -15,7 +15,7 @@ pub use ext_x_targetduration::*;
 use crate::types::MediaPlaylistType;
 
 #[derive(Debug)]
-pub enum MediaPlaylistTags {
+pub enum MediaPlaylistTag {
     ExtXTargetduration(u64),
     ExtXMediaSequence(u64),
     ExtXDiscontinuitySequence(u64),

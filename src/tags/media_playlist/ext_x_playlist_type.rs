@@ -4,21 +4,21 @@ use nom::{
 };
 
 use crate::{
-    tags::{MediaPlaylistTags, Tag, Tags},
+    tags::{MediaPlaylistTag, ExtTag, Tag},
     types::{MediaPlaylistType, Version},
 };
 
 #[derive(Debug)]
 pub struct ExtXPlaylistType;
 
-impl Tag for ExtXPlaylistType {
+impl ExtTag for ExtXPlaylistType {
     const TAG_PREFIX: &'static str = "EXT-X-PLAYLIST-TYPE";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -29,7 +29,7 @@ impl Tag for ExtXPlaylistType {
                 )),
             ),
             |(_, media_playlist_type)| {
-                Tags::MediaPlaylist(MediaPlaylistTags::ExtXPlaylistType(media_playlist_type))
+                Tag::MediaPlaylist(MediaPlaylistTag::ExtXPlaylistType(media_playlist_type))
             },
         )
         .parse(s)

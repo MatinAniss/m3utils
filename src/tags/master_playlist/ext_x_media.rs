@@ -10,8 +10,8 @@ use nom::{
 
 use crate::{
     tags::{
-        Tag, Tags,
-        master_playlist::MasterPlaylistTags,
+        ExtTag, Tag,
+        master_playlist::MasterPlaylistTag,
         utils::{not_line_ending_or_comma, not_quote},
     },
     types::{MediaType, Version},
@@ -49,14 +49,14 @@ enum ExtXMediaAttributes {
     Unknown,
 }
 
-impl Tag for ExtXMedia {
+impl ExtTag for ExtXMedia {
     const TAG_PREFIX: &'static str = "EXT-X-MEDIA";
 
     fn min_version() -> Version {
         Version::V1
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map_res(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -269,7 +269,7 @@ impl Tag for ExtXMedia {
                     }
                 }
 
-                Ok(Tags::MasterPlaylist(MasterPlaylistTags::ExtXMedia(Self {
+                Ok(Tag::MasterPlaylist(MasterPlaylistTag::ExtXMedia(Self {
                     media_type: media_type.ok_or("")?,
                     uri,
                     group_id: group_id.ok_or("")?,

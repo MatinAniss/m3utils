@@ -10,8 +10,8 @@ use nom::{
 
 use crate::{
     tags::{
-        Tag, Tags,
-        master_playlist::MasterPlaylistTags,
+        ExtTag, Tag,
+        master_playlist::MasterPlaylistTag,
         utils::{not_line_ending_or_comma, not_quote},
     },
     types::{HDCPLevel, Resolution, Version},
@@ -39,14 +39,14 @@ enum ExtXIFrameStreamInfAttributes {
     Unknown,
 }
 
-impl Tag for ExtXIFrameStreamInf {
+impl ExtTag for ExtXIFrameStreamInf {
     const TAG_PREFIX: &'static str = "EXT-X-I-FRAME-STREAM-INF";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map_res(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -172,8 +172,8 @@ impl Tag for ExtXIFrameStreamInf {
                     }
                 }
 
-                Ok(Tags::MasterPlaylist(
-                    MasterPlaylistTags::ExtXIFrameStreamInf(Self {
+                Ok(Tag::MasterPlaylist(MasterPlaylistTag::ExtXIFrameStreamInf(
+                    Self {
                         bandwidth: bandwidth.ok_or("")?,
                         average_bandwidth,
                         codecs,
@@ -181,8 +181,8 @@ impl Tag for ExtXIFrameStreamInf {
                         hdcp_level,
                         video,
                         uri: uri.ok_or("")?,
-                    }),
-                ))
+                    },
+                )))
             },
         )
         .parse(s)

@@ -10,7 +10,7 @@ use nom::{
 };
 
 use crate::{
-    tags::{Tag, Tags, playlist::PlaylistTags, utils::not_line_ending_or_comma},
+    tags::{ExtTag, Tag, playlist::PlaylistTag, utils::not_line_ending_or_comma},
     types::{Start, Version},
 };
 
@@ -23,14 +23,14 @@ enum ExtXStartAttributes {
     Unknown,
 }
 
-impl Tag for ExtXStart {
+impl ExtTag for ExtXStart {
     const TAG_PREFIX: &'static str = "EXT-X-START";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map_res(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -76,7 +76,7 @@ impl Tag for ExtXStart {
                     }
                 }
 
-                Ok(Tags::Playlist(PlaylistTags::ExtXStart(Start {
+                Ok(Tag::Playlist(PlaylistTag::ExtXStart(Start {
                     time_offset: time_offset.ok_or("")?,
                     precise: precise.unwrap_or(false),
                 })))

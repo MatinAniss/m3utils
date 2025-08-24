@@ -11,9 +11,7 @@ use nom::{
 
 use crate::{
     Error,
-    tags::{
-        BasicTags, Extinf, MediaPlaylistTags, MediaSegmentTags, PlaylistTags, TAG_PARSERS, Tags,
-    },
+    tags::{BasicTag, Extinf, MediaPlaylistTag, MediaSegmentTag, PlaylistTag, TAG_PARSERS, Tag},
     types::{MediaPlaylistType, Segment, Start, Version},
 };
 
@@ -34,7 +32,7 @@ pub struct MediaPlaylist {
 
 #[derive(Debug)]
 enum Line {
-    Tag(Tags),
+    Tag(Tag),
     Comment(String),
     Uri(String),
     Empty,
@@ -83,10 +81,7 @@ impl FromStr for MediaPlaylist {
         let mut comments = Vec::new();
 
         // Check for EXTM3U tag at first line
-        if !matches!(
-            lines.next(),
-            Some(Line::Tag(Tags::Basic(BasicTags::Extm3u)))
-        ) {
+        if !matches!(lines.next(), Some(Line::Tag(Tag::Basic(BasicTag::Extm3u)))) {
             return Err(Error::MissingExtm3u);
         }
 
@@ -102,100 +97,100 @@ impl FromStr for MediaPlaylist {
         while let Some(line) = lines.next() {
             match line {
                 Line::Tag(tag) => match tag {
-                    Tags::Basic(BasicTags::Extm3u) => {
+                    Tag::Basic(BasicTag::Extm3u) => {
                         return Err(Error::DuplicateTag);
                     }
-                    Tags::Basic(BasicTags::ExtXVersion(v)) => {
+                    Tag::Basic(BasicTag::ExtXVersion(v)) => {
                         if version.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         version = Some(v);
                     }
-                    Tags::MediaSegment(MediaSegmentTags::Extinf(v)) => {
+                    Tag::MediaSegment(MediaSegmentTag::Extinf(v)) => {
                         if extinf.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         extinf = Some(v);
                     }
-                    Tags::MediaSegment(MediaSegmentTags::ExtXByterange(v)) => {
+                    Tag::MediaSegment(MediaSegmentTag::ExtXByterange(v)) => {
                         if ext_x_byterange.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         ext_x_byterange = Some(v);
                     }
-                    Tags::MediaSegment(MediaSegmentTags::ExtXDiscontinuity) => {
+                    Tag::MediaSegment(MediaSegmentTag::ExtXDiscontinuity) => {
                         if ext_x_discontinuity.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         ext_x_discontinuity = Some(true);
                     }
-                    Tags::MediaSegment(MediaSegmentTags::ExtXKey(v)) => {
+                    Tag::MediaSegment(MediaSegmentTag::ExtXKey(v)) => {
                         if ext_x_key.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         ext_x_key = Some(v);
                     }
-                    Tags::MediaSegment(MediaSegmentTags::ExtXMap(v)) => {
+                    Tag::MediaSegment(MediaSegmentTag::ExtXMap(v)) => {
                         if ext_x_map.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         ext_x_map = Some(v);
                     }
-                    Tags::MediaSegment(MediaSegmentTags::ExtXProgramDateTime(v)) => {
+                    Tag::MediaSegment(MediaSegmentTag::ExtXProgramDateTime(v)) => {
                         if ext_x_program_date_time.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         ext_x_program_date_time = Some(v);
                     }
-                    Tags::MediaSegment(MediaSegmentTags::ExtXDaterange(v)) => {
+                    Tag::MediaSegment(MediaSegmentTag::ExtXDaterange(v)) => {
                         if ext_x_daterange.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         ext_x_daterange = Some(v);
                     }
-                    Tags::MediaPlaylist(MediaPlaylistTags::ExtXTargetduration(v)) => {
+                    Tag::MediaPlaylist(MediaPlaylistTag::ExtXTargetduration(v)) => {
                         if target_duration.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         target_duration = Some(v);
                     }
-                    Tags::MediaPlaylist(MediaPlaylistTags::ExtXMediaSequence(v)) => {
+                    Tag::MediaPlaylist(MediaPlaylistTag::ExtXMediaSequence(v)) => {
                         if media_sequence.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         media_sequence = Some(v);
                     }
-                    Tags::MediaPlaylist(MediaPlaylistTags::ExtXDiscontinuitySequence(v)) => {
+                    Tag::MediaPlaylist(MediaPlaylistTag::ExtXDiscontinuitySequence(v)) => {
                         if discontinuity_sequence.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         discontinuity_sequence = Some(v);
                     }
-                    Tags::MediaPlaylist(MediaPlaylistTags::ExtXEndlist) => {
+                    Tag::MediaPlaylist(MediaPlaylistTag::ExtXEndlist) => {
                         if end_list.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         end_list = Some(true);
                     }
-                    Tags::MediaPlaylist(MediaPlaylistTags::ExtXPlaylistType(v)) => {
+                    Tag::MediaPlaylist(MediaPlaylistTag::ExtXPlaylistType(v)) => {
                         if playlist_type.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         playlist_type = Some(v);
                     }
-                    Tags::MediaPlaylist(MediaPlaylistTags::ExtXIFramesOnly) => {
+                    Tag::MediaPlaylist(MediaPlaylistTag::ExtXIFramesOnly) => {
                         if i_frames_only.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         i_frames_only = Some(true);
                     }
-                    Tags::Playlist(PlaylistTags::ExtXIndependentSegments) => {
+                    Tag::Playlist(PlaylistTag::ExtXIndependentSegments) => {
                         if independent_segments.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         independent_segments = Some(true);
                     }
-                    Tags::Playlist(PlaylistTags::ExtXStart(v)) => {
+                    Tag::Playlist(PlaylistTag::ExtXStart(v)) => {
                         if start.is_some() {
                             return Err(Error::DuplicateTag);
                         }
@@ -204,7 +199,7 @@ impl FromStr for MediaPlaylist {
                             precise: v.precise,
                         });
                     }
-                    Tags::MasterPlaylist(_) => {
+                    Tag::MasterPlaylist(_) => {
                         return Err(Error::IncompatibleTag);
                     }
                 },

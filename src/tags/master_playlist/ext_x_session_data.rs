@@ -10,8 +10,8 @@ use nom::{
 
 use crate::{
     tags::{
-        Tag, Tags,
-        master_playlist::MasterPlaylistTags,
+        ExtTag, Tag,
+        master_playlist::MasterPlaylistTag,
         utils::{not_line_ending_or_comma, not_quote},
     },
     types::Version,
@@ -33,14 +33,14 @@ enum ExtXSessionDataAttributes {
     Unknown,
 }
 
-impl Tag for ExtXSessionData {
+impl ExtTag for ExtXSessionData {
     const TAG_PREFIX: &'static str = "EXT-X-SESSION-DATA";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map_res(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -125,7 +125,7 @@ impl Tag for ExtXSessionData {
                     }
                 }
 
-                Ok(Tags::MasterPlaylist(MasterPlaylistTags::ExtXSessionData(
+                Ok(Tag::MasterPlaylist(MasterPlaylistTag::ExtXSessionData(
                     Self {
                         data_id: data_id.ok_or("")?,
                         value,

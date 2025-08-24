@@ -7,21 +7,21 @@ use nom::{
 };
 
 use crate::{
-    tags::{MediaSegmentTags, Tag, Tags},
+    tags::{ExtTag, MediaSegmentTag, Tag},
     types::{ByteRange, Version},
 };
 
 #[derive(Debug)]
 pub struct ExtXByterange;
 
-impl Tag for ExtXByterange {
+impl ExtTag for ExtXByterange {
     const TAG_PREFIX: &'static str = "EXT-X-BYTERANGE";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -29,10 +29,7 @@ impl Tag for ExtXByterange {
                 pair(u64, opt(preceded(char('@'), u64))),
             ),
             |(_, (length, offset))| {
-                Tags::MediaSegment(MediaSegmentTags::ExtXByterange(ByteRange {
-                    length,
-                    offset,
-                }))
+                Tag::MediaSegment(MediaSegmentTag::ExtXByterange(ByteRange { length, offset }))
             },
         )
         .parse(s)

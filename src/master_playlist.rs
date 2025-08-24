@@ -11,7 +11,7 @@ use nom::{
 
 use crate::{
     Error,
-    tags::{BasicTags, MasterPlaylistTags, PlaylistTags, TAG_PARSERS, Tags},
+    tags::{BasicTag, MasterPlaylistTag, PlaylistTag, TAG_PARSERS, Tag},
     types::{Data, DataEntry, IFrameVariant, Key, Rendition, Start, Variant, Version},
 };
 
@@ -29,7 +29,7 @@ pub struct MasterPlaylist {
 }
 
 enum Line {
-    Tag(Tags),
+    Tag(Tag),
     Comment(String),
     Uri(String),
     Empty,
@@ -76,26 +76,23 @@ impl FromStr for MasterPlaylist {
         let mut comments = Vec::new();
 
         // Check for EXTM3U tag at first line
-        if !matches!(
-            lines.next(),
-            Some(Line::Tag(Tags::Basic(BasicTags::Extm3u)))
-        ) {
+        if !matches!(lines.next(), Some(Line::Tag(Tag::Basic(BasicTag::Extm3u)))) {
             return Err(Error::MissingExtm3u);
         }
 
         while let Some(line) = lines.next() {
             match line {
                 Line::Tag(tag) => match tag {
-                    Tags::Basic(BasicTags::Extm3u) => {
+                    Tag::Basic(BasicTag::Extm3u) => {
                         return Err(Error::DuplicateTag);
                     }
-                    Tags::Basic(BasicTags::ExtXVersion(v)) => {
+                    Tag::Basic(BasicTag::ExtXVersion(v)) => {
                         if version.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         version = Some(v);
                     }
-                    Tags::MasterPlaylist(MasterPlaylistTags::ExtXMedia(v)) => {
+                    Tag::MasterPlaylist(MasterPlaylistTag::ExtXMedia(v)) => {
                         renditions.push(Rendition {
                             media_type: v.media_type,
                             uri: v.uri,
@@ -111,7 +108,7 @@ impl FromStr for MasterPlaylist {
                             channels: v.channels,
                         });
                     }
-                    Tags::MasterPlaylist(MasterPlaylistTags::ExtXStreamInf(v)) => {
+                    Tag::MasterPlaylist(MasterPlaylistTag::ExtXStreamInf(v)) => {
                         if let Some(Line::Uri(uri)) = lines.next() {
                             variants.push(Variant {
                                 uri,
@@ -130,7 +127,7 @@ impl FromStr for MasterPlaylist {
                             return Err(Error::IncompleteTag);
                         }
                     }
-                    Tags::MasterPlaylist(MasterPlaylistTags::ExtXIFrameStreamInf(v)) => {
+                    Tag::MasterPlaylist(MasterPlaylistTag::ExtXIFrameStreamInf(v)) => {
                         i_frame_variants.push(IFrameVariant {
                             bandwidth: v.bandwidth,
                             average_bandwidth: v.average_bandwidth,
@@ -141,7 +138,7 @@ impl FromStr for MasterPlaylist {
                             uri: v.uri,
                         });
                     }
-                    Tags::MasterPlaylist(MasterPlaylistTags::ExtXSessionData(v)) => {
+                    Tag::MasterPlaylist(MasterPlaylistTag::ExtXSessionData(v)) => {
                         let entry = match (v.value, v.uri) {
                             (Some(_), Some(_)) => {
                                 return Err(Error::InvalidTag);
@@ -159,7 +156,7 @@ impl FromStr for MasterPlaylist {
                             language: v.language,
                         });
                     }
-                    Tags::MasterPlaylist(MasterPlaylistTags::ExtXSessionKey(v)) => {
+                    Tag::MasterPlaylist(MasterPlaylistTag::ExtXSessionKey(v)) => {
                         session_keys.push(Key {
                             method: v.method,
                             uri: v.uri,
@@ -168,13 +165,13 @@ impl FromStr for MasterPlaylist {
                             key_format_versions: v.key_format_versions,
                         });
                     }
-                    Tags::Playlist(PlaylistTags::ExtXIndependentSegments) => {
+                    Tag::Playlist(PlaylistTag::ExtXIndependentSegments) => {
                         if independent_segments.is_some() {
                             return Err(Error::DuplicateTag);
                         }
                         independent_segments = Some(true);
                     }
-                    Tags::Playlist(PlaylistTags::ExtXStart(v)) => {
+                    Tag::Playlist(PlaylistTag::ExtXStart(v)) => {
                         if start.is_some() {
                             return Err(Error::DuplicateTag);
                         }
@@ -183,7 +180,7 @@ impl FromStr for MasterPlaylist {
                             precise: v.precise,
                         });
                     }
-                    Tags::MediaSegment(_) | Tags::MediaPlaylist(_) => {
+                    Tag::MediaSegment(_) | Tag::MediaPlaylist(_) => {
                         return Err(Error::IncompatibleTag);
                     }
                 },

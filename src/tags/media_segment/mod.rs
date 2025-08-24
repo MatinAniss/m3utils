@@ -17,7 +17,7 @@ pub use extinf::*;
 use crate::types::{ByteRange, DateRange, DateTime, Key, Map};
 
 #[derive(Debug)]
-pub enum MediaSegmentTags {
+pub enum MediaSegmentTag {
     Extinf(Extinf),
     ExtXByterange(ByteRange),
     ExtXDiscontinuity,

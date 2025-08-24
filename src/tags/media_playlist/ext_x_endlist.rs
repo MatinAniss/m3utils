@@ -1,23 +1,23 @@
 use nom::{IResult, Parser, bytes::complete::tag, combinator::map};
 
 use crate::{
-    tags::{MediaPlaylistTags, Tag, Tags},
+    tags::{ExtTag, MediaPlaylistTag, Tag},
     types::Version,
 };
 
 #[derive(Debug)]
 pub struct ExtXEndlist;
 
-impl Tag for ExtXEndlist {
+impl ExtTag for ExtXEndlist {
     const TAG_PREFIX: &'static str = "EXT-X-ENDLIST";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map(tag(Self::TAG_PREFIX), |_| {
-            Tags::MediaPlaylist(MediaPlaylistTags::ExtXEndlist)
+            Tag::MediaPlaylist(MediaPlaylistTag::ExtXEndlist)
         })
         .parse(s)
     }

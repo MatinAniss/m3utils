@@ -10,8 +10,8 @@ use nom::{
 
 use crate::{
     tags::{
-        Tag, Tags,
-        master_playlist::MasterPlaylistTags,
+        ExtTag, Tag,
+        master_playlist::MasterPlaylistTag,
         utils::{hexadecimal, not_line_ending_or_comma, not_quote},
     },
     types::{EncryptionMethod, Version},
@@ -35,14 +35,14 @@ enum ExtXSessionKeyAttributes {
     Unknown,
 }
 
-impl Tag for ExtXSessionKey {
+impl ExtTag for ExtXSessionKey {
     const TAG_PREFIX: &'static str = "EXT-X-SESSION-KEY";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map_res(
             separated_pair(
                 tag(Self::TAG_PREFIX),
@@ -147,7 +147,7 @@ impl Tag for ExtXSessionKey {
                     }
                 }
 
-                Ok(Tags::MasterPlaylist(MasterPlaylistTags::ExtXSessionKey(
+                Ok(Tag::MasterPlaylist(MasterPlaylistTag::ExtXSessionKey(
                     Self {
                         method: method.ok_or("")?,
                         uri: uri.ok_or("")?,

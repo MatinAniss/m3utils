@@ -16,24 +16,24 @@ pub use playlist::*;
 use crate::types::Version;
 
 #[derive(Debug)]
-pub enum Tags {
-    Basic(BasicTags),
-    MasterPlaylist(MasterPlaylistTags),
-    MediaPlaylist(MediaPlaylistTags),
-    MediaSegment(MediaSegmentTags),
-    Playlist(PlaylistTags),
+pub enum Tag {
+    Basic(BasicTag),
+    MasterPlaylist(MasterPlaylistTag),
+    MediaPlaylist(MediaPlaylistTag),
+    MediaSegment(MediaSegmentTag),
+    Playlist(PlaylistTag),
 }
 
-pub(crate) trait Tag {
+pub(crate) trait ExtTag {
     const TAG_PREFIX: &'static str;
 
     #[allow(dead_code)]
     fn min_version() -> Version;
 
-    fn parse(s: &str) -> IResult<&str, Tags>;
+    fn parse(s: &str) -> IResult<&str, Tag>;
 }
 
-pub(crate) const TAG_PARSERS: [fn(&str) -> IResult<&str, Tags>; 22] = [
+pub(crate) const TAG_PARSERS: [fn(&str) -> IResult<&str, Tag>; 22] = [
     // Basic Tags
     Extm3u::parse,
     ExtXVersion::parse,

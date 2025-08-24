@@ -7,24 +7,24 @@ use nom::{
 };
 
 use crate::{
-    tags::{MediaPlaylistTags, Tag, Tags},
+    tags::{MediaPlaylistTag, ExtTag, Tag},
     types::Version,
 };
 
 #[derive(Debug)]
 pub struct ExtXTargetduration;
 
-impl Tag for ExtXTargetduration {
+impl ExtTag for ExtXTargetduration {
     const TAG_PREFIX: &'static str = "EXT-X-TARGETDURATION";
 
     fn min_version() -> Version {
         todo!()
     }
 
-    fn parse(s: &str) -> IResult<&str, Tags> {
+    fn parse(s: &str) -> IResult<&str, Tag> {
         map(
             separated_pair(tag(Self::TAG_PREFIX), char(':'), u64),
-            |(_, duration)| Tags::MediaPlaylist(MediaPlaylistTags::ExtXTargetduration(duration)),
+            |(_, duration)| Tag::MediaPlaylist(MediaPlaylistTag::ExtXTargetduration(duration)),
         )
         .parse(s)
     }

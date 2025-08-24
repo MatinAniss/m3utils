@@ -11,7 +11,7 @@ pub use ext_x_session_key::*;
 pub use ext_x_stream_inf::*;
 
 #[derive(Debug)]
-pub enum MasterPlaylistTags {
+pub enum MasterPlaylistTag {
     ExtXMedia(ExtXMedia),
     ExtXStreamInf(ExtXStreamInf),
     ExtXIFrameStreamInf(ExtXIFrameStreamInf),
